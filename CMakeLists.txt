@@ -6,56 +6,6 @@ set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fsanitize=address")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-add_definitions(
-        -UNDEBUG
-        -DDTF_HEADER_ONLY
-)
-
-include_directories(
-        ./include
-)
-
-if (DEFINED ${BOOST_INCLUDE_DIR})
-    include_directories(
-            ${BOOST_INCLUDE_DIR}
-    )
-endif()
-
-
-find_package(OpenSSL REQUIRED)
-
-if (${OPENSSL_FOUND})
-    include_directories(
-            ${OPENSSL_INCLUDE_DIR}
-    )
-else()
-    message(FATAL_ERROR "OpenSSL not found please install it!")
-endif()
-
-find_package(Threads REQUIRED)
-if (NOT ${Threads_FOUND})
-    message(FATAL_ERROR "Threads not found please install it!")
-endif()
-
-find_package(Boost REQUIRED)
-if (${Boost_FOUND})
-    include_directories(
-            ${Boost_INCLUDE_DIRS}
-    )
-else()
-    message(FATAL_ERROR "Boost not found please install it!")
-endif()
-
-find_package(ZLIB REQUIRED)
-
-if (${ZLIB_FOUND})
-    include_directories(
-            ${ZLIB_INCLUDE_DIRS}
-    )
-else()
-    message(FATAL_ERROR "ZLIB not found please install it!")
-endif()
-
 set(BINAPI_HEADERS
         binapi/api.hpp
         binapi/flatjson.hpp
@@ -83,8 +33,52 @@ set(BINAPI_SOURCES
         src/websocket.cpp
         )
 
+
 add_library(${PROJECT_NAME} STATIC
         ${BINAPI_SOURCES})
+
+add_definitions(
+        -UNDEBUG
+        -DDTF_HEADER_ONLY
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ./include
+)
+
+find_package(OpenSSL REQUIRED)
+
+if (${OPENSSL_FOUND})
+    target_include_directories( ${PROJECT_NAME} PUBLIC
+            ${OPENSSL_INCLUDE_DIR}
+    )
+else()
+    message(FATAL_ERROR "OpenSSL not found please install it!")
+endif()
+
+find_package(Threads REQUIRED)
+if (NOT ${Threads_FOUND})
+    message(FATAL_ERROR "Threads not found please install it!")
+endif()
+
+find_package(Boost REQUIRED)
+if (${Boost_FOUND})
+    target_include_directories( ${PROJECT_NAME} PUBLIC
+            ${Boost_INCLUDE_DIRS}
+    )
+else()
+    message(FATAL_ERROR "Boost not found please install it!")
+endif()
+
+find_package(ZLIB REQUIRED)
+
+if (${ZLIB_FOUND})
+    target_include_directories( ${PROJECT_NAME} PUBLIC
+            ${ZLIB_INCLUDE_DIRS}
+    )
+else()
+    message(FATAL_ERROR "ZLIB not found please install it!")
+endif()
 
 target_link_libraries(
         ${PROJECT_NAME}
